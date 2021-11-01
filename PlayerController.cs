@@ -3,35 +3,65 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
+
 {
-    public float speed;
-    new Vector3 playerPos;
+    
+    public float speed = 7;
+    private bool hasPosession = false;
+    public Vector3 playerOrientation;
+    Rigidbody ballRb;
+    
+    
     // Start is called before the first frame update
     void Start()
     {
-        
+        ballRb = GameObject.Find("Ball").GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
         //Four lines of code that denote the types of movement players will be able to make
-        
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        Debug.Log("Right");
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float forwardInput = Input.GetAxis("Vertical");
+
+        transform.Translate(Vector3.right * horizontalInput * speed * Time.deltaTime);
+        transform.Translate(Vector3.forward * forwardInput * speed * Time.deltaTime);
+
+
+      
+        if (Input.GetKeyDown(KeyCode.Space) && hasPosession == true){
+                Debug.Log(playerOrientation.x - ballRb.transform.position.x);
+                //ballRb.MoveRotation(new Vector3 )
+                playerOrientation.x = transform.position.x;
+                ballRb.AddForce(transform.position * -2, ForceMode.Impulse);
+            }
+        /*if (hasPosession == true)
+        {
+                ballRb.transform.position = Vector3.MoveTowards(ballRb.transform.position*-1, transform.position*-1, 5*Time.deltaTime );
+                
+        }
+        */
         
 
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        Debug.Log("Left");
-        playerPos = transform.position;
-        playerPos.position.x--;
-        transform.position = position;
-        
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        Debug.Log("Down");
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        Debug.Log("Up");
-        if (Input.GetKeyDown(KeyCode.Space))
-        Debug.Log("Space");
+
+       
     }
+        void OnCollisionEnter(Collision collision) {
+            if (collision.gameObject.CompareTag("Ball"))
+            {
+                Debug.Log("Has posession is" + hasPosession);
+                hasPosession  = true;
+            }
+            
+        }
+
+        void OnCollisionExit(Collision collision) {
+            if (collision.gameObject.CompareTag("Ball"))
+            {
+                Debug.Log("Has posession is" + hasPosession);
+                hasPosession = false;
+            }
+            
+        }
 }
